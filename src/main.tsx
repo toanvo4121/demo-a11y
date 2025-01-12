@@ -1,11 +1,10 @@
-// src/main.tsx (updated)
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { ThemeProvider } from './context/ThemeContext';
 import { A11yProvider } from './context/A11yContext';
-import './index.css'; // Import the main CSS file
+import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

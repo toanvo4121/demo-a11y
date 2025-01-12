@@ -1,7 +1,5 @@
-// src/App.tsx (updated with classes)
-import React, { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { useA11y } from './hooks/useA11y';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { Home } from './pages/Home';
@@ -9,19 +7,11 @@ import { Products } from './pages/Products';
 import { Cart } from './pages/Cart';
 
 const App: React.FC = () => {
-  const location = useLocation();
-  const { announce } = useA11y();
-
-  useEffect(() => {
-    const pageTitle = document.title;
-    announce(`Navigated to ${pageTitle}`);
-  }, [location, announce]);
-
   return (
     <div className="min-h-screen flex flex-col bg-background text-text">
       <Header />
 
-      <a href="#main-content" className="skip-link">
+      <a href="#main-content" className="sr-only focus:not-sr-only fixed left-4 top-4 z-50 bg-white text-black px-4 py-2 rounded">
         Skip to main content
       </a>
 
