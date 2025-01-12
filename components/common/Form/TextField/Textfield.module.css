@@ -1,0 +1,26 @@
+.formField {
+  @apply mb-4;
+}
+
+.label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.input {
+  @apply block w-full rounded-md border-gray-300 shadow-sm;
+  @apply focus:border-blue-500 focus:ring-blue-500;
+  @apply min-h-[44px]; /* Ensure sufficient touch target size */
+}
+
+.error {
+  @apply border-red-300 text-red-900;
+  @apply focus:border-red-500 focus:ring-red-500;
+}
+
+.errorText {
+  @apply mt-2 text-sm text-red-600;
+}
+
+.helpText {
+  @apply mt-2 text-sm text-gray-500;
+}
