@@ -3,7 +3,6 @@ export const announce = (message: string, priority: 'polite' | 'assertive' = 'po
   announcer.setAttribute('aria-live', priority);
   announcer.setAttribute('aria-atomic', 'true');
   announcer.className = 'sr-only';
-
   document.body.appendChild(announcer);
 
   // Ensure DOM update

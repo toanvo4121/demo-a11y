@@ -3,39 +3,46 @@ import { useA11y } from '../../../hooks/useA11y';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary';
-  icon?: React.ReactNode;
   loading?: boolean;
+  icon?: React.ReactNode;
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ children, variant = 'primary', icon, loading, ...props }, ref) => {
-    const { announce } = useA11y();
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  variant = 'primary',
+  loading,
+  icon,
+  className,
+  ...props
+}) => {
+  const { announce } = useA11y();
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (loading) {
-        announce('Processing action, please wait...');
-      }
-      props.onClick?.(e);
-    };
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (loading) {
+      announce('Processing action, please wait...');
+    }
+    props.onClick?.(e);
+  };
 
-    return (
-      <button
-        ref={ref}
-        className={`btn btn-${variant}`}
-        disabled={loading}
-        onClick={handleClick}
-        aria-busy={loading}
-        {...props}
-      >
-        {icon && (
-          <span className="btn-icon" aria-hidden="true">
-            {icon}
-          </span>
-        )}
-        <span className="btn-text">{children}</span>
-      </button>
-    );
-  }
-);
-
-Button.displayName = 'Button';
+  return (
+    <button
+      className={`btn btn-${variant} ${loading ? 'opacity-50 cursor-not-allowed' : ''} ${className || ''}`}
+      disabled={loading}
+      aria-busy={loading}
+      onClick={handleClick}
+      {...props}
+    >
+      {icon && (
+        <span className="mr-2" aria-hidden="true">
+          {icon}
+        </span>
+      )}
+      {children}
+      {loading && (
+        <span className="ml-2" aria-hidden="true">
+          Loading...
+        </span>
+      )}
+    </button>
+  );
+};

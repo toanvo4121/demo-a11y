@@ -1,5 +1,4 @@
 import React from 'react';
-import { useId } from 'react';
 
 interface TextFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -7,40 +6,41 @@ interface TextFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   helpText?: string;
 }
 
-export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
-  ({ label, error, helpText, id: providedId, ...props }, ref) => {
-    const generatedId = useId();
-    const id = providedId || generatedId;
-    const errorId = `${id}-error`;
-    const helpTextId = `${id}-help`;
+export const TextField: React.FC<TextFieldProps> = ({
+  label,
+  error,
+  helpText,
+  id,
+  className,
+  ...props
+}) => {
+  const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+  const errorId = `${inputId}-error`;
+  const helpTextId = `${inputId}-help`;
 
-    return (
-      <div className="form-field">
-        <label htmlFor={id} className="form-label">
-          {label}
-        </label>
-        <input
-          ref={ref}
-          id={id}
-          className={`form-input ${error ? 'form-input-error' : ''}`}
-          aria-invalid={!!error}
-          aria-errormessage={error ? errorId : undefined}
-          aria-describedby={helpText ? helpTextId : undefined}
-          {...props}
-        />
-        {helpText && (
-          <div id={helpTextId} className="help-text">
-            {helpText}
-          </div>
-        )}
-        {error && (
-          <div id={errorId} className="error-text" role="alert">
-            {error}
-          </div>
-        )}
-      </div>
-    );
-  }
-);
-
-TextField.displayName = 'TextField';
+  return (
+    <div className="form-field">
+      <label htmlFor={inputId} className="form-label">
+        {label}
+      </label>
+      <input
+        id={inputId}
+        className={`form-input ${error ? 'border-red-500' : ''} ${className || ''}`}
+        aria-invalid={!!error}
+        aria-errormessage={error ? errorId : undefined}
+        aria-describedby={helpText ? helpTextId : undefined}
+        {...props}
+      />
+      {helpText && (
+        <p id={helpTextId} className="mt-1 text-sm text-text-light">
+          {helpText}
+        </p>
+      )}
+      {error && (
+        <p id={errorId} className="mt-1 text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+};
