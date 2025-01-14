@@ -1,87 +1,80 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import { CartItem } from '../components/features/ShoppingCart/CartItem';
 import { CartSummary } from '../components/features/ShoppingCart/CartSummary';
-import { useA11y } from '../hooks/useA11y';
 
 export const Cart: React.FC = () => {
-  const { announce } = useA11y();
+  const { items, removeItem, updateQuantity, totalPrice } = useCart();
 
-  // Mock cart data
-  const [cartItems, setCartItems] = useState([
-    {
-      id: '1',
-      name: 'Product 1',
-      price: 99.99,
-      quantity: 1,
-      imageUrl: 'https://png.pngtree.com/png-vector/20190223/ourmid/pngtree-vector-picture-icon-png-image_695350.jpg',
-    },
-    // Add more items
-  ]);
-
-  const calculateTotals = () => {
-    const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const tax = subtotal * 0.1;
-    const shipping = subtotal > 100 ? 0 : 10;
-    return { subtotal, tax, shipping, total: subtotal + tax + shipping };
-  };
+  if (items.length === 0) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center">
+          <div className="mb-6">
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+            Your cart is empty
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">
+            Looks like you haven't added any items to your cart yet.
+          </p>
+          <Link
+            to="/products"
+            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          >
+            Continue Shopping
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Shopping Cart
-          </h1>
-        </header>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-3xl my-12 font-bold text-gray-900 dark:text-white mb-8">
+        Shopping Cart ({items.length} {items.length === 1 ? 'item' : 'items'})
+      </h1>
 
-        {cartItems.length === 0 ? (
-          <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Your cart is empty
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Add some items to your cart to continue shopping
-            </p>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-8">
+          <div className="space-y-4">
+            {items.map((item) => (
+              <CartItem
+                key={item.id}
+                {...item}
+                onQuantityChange={(id, quantity) => updateQuantity(id, quantity)}
+                onRemove={removeItem}
+              />
+            ))}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Cart Items */}
-            <div className="lg:col-span-8">
-              <div className="space-y-4">
-                {cartItems.map((item) => (
-                  <CartItem
-                    key={item.id}
-                    {...item}
-                    onQuantityChange={(id, quantity) => {
-                      setCartItems(items =>
-                        items.map(item =>
-                          item.id === id ? { ...item, quantity } : item
-                        )
-                      );
-                    }}
-                    onRemove={(id) => {
-                      setCartItems(items => items.filter(item => item.id !== id));
-                      announce('Item removed from cart');
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+        </div>
 
-            {/* Cart Summary */}
-            <div className="lg:col-span-4">
-              <div className="sticky top-24 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-                <CartSummary
-                  {...calculateTotals()}
-                  onCheckout={() => {
-                    announce('Processing checkout...');
-                    // Checkout logic
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="lg:col-span-4">
+          <CartSummary
+            subtotal={totalPrice}
+            tax={totalPrice * 0.1}
+            shipping={totalPrice > 100 ? 0 : 10}
+            total={totalPrice + (totalPrice * 0.1) + (totalPrice > 100 ? 0 : 10)}
+            onCheckout={() => {
+              // Handle checkout
+            }}
+          />
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '../../common/Button/Button';
+import { useCart } from '../../../context/CartContext';
 
 interface ProductCardProps {
   id: string;
@@ -7,17 +8,26 @@ interface ProductCardProps {
   price: number;
   description: string;
   imageUrl: string;
-  onAddToCart: () => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
-  // id,
+  id,
   name,
   price,
   description,
   imageUrl,
-  onAddToCart
 }) => {
+  const { addItem } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddToCart = async () => {
+    setIsAdding(true);
+    // Simulate a small delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 500));
+    addItem({ id, name, price, imageUrl });
+    setIsAdding(false);
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
       <img
@@ -37,12 +47,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             ${price.toFixed(2)}
           </span>
           <Button
-            onClick={onAddToCart}
+            onClick={handleAddToCart}
+            disabled={isAdding}
+            loading={isAdding}
             variant="primary"
             className="text-sm"
             aria-label={`Add ${name} to cart`}
           >
-            Add to Cart
+            {isAdding ? 'Adding...' : 'Add to Cart'}
           </Button>
         </div>
       </div>
